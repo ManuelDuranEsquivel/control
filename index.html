@@ -240,6 +240,43 @@
             const statusMessage = document.getElementById("status-message");
             statusMessage.textContent = `Comando enviado: ${command}`;
         }
+
+         // Detecta el inicio del toque
+         joystickContainer.addEventListener("touchstart", (e) => {
+            isTouching = true;
+            const touch = e.touches[0];
+            updateJoystickPositionFromTouch(touch);
+        });
+
+        // Detecta el movimiento del toque
+        joystickContainer.addEventListener("touchmove", (e) => {
+            if (isTouching) {
+                const touch = e.touches[0];
+                updateJoystickPositionFromTouch(touch);
+            }
+        });
+
+        // Detecta el fin del toque
+        joystickContainer.addEventListener("touchend", () => {
+            isTouching = false;
+            sendCommand('touch-end'); // Señal de que se ha soltado el joystick
+        });
+
+        // Actualiza la posición del joystick según el toque
+        function updateJoystickPositionFromTouch(touch) {
+            const rect = joystickContainer.getBoundingClientRect();
+            let x = touch.clientX - rect.left - joystick.offsetWidth / 2;
+            let y = touch.clientY - rect.top - joystick.offsetHeight / 2;
+
+            const maxX = joystickContainer.offsetWidth - joystick.offsetWidth;
+            const maxY = joystickContainer.offsetHeight - joystick.offsetHeight;
+
+            x = Math.max(0, Math.min(maxX, x));
+            y = Math.max(0, Math.min(maxY, y));
+
+            joystickPosition = { x, y };
+            updateJoystickPosition();
+        }
     </script>
 
 </body>
