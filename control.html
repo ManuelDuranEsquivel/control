@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pantalla del Celular</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: linear-gradient(135deg, #e0f7fa, #b2ebf2); /* Fondo degradado */
+            text-align: center;
+        }
+
+        .screen-container {
+            background-color: #ffffff;
+            border-radius: 20px;
+            width: 360px;
+            padding: 20px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            border: 3px solid #80deea;
+        }
+
+        .screen-container__title {
+            font-size: 24px;
+            font-weight: bold;
+            color: #00796b;
+            margin-bottom: 20px;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+        }
+
+        .light-indicator {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+
+        .light-indicator .light {
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            background-color: #e0e0e0;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s ease;
+        }
+
+        .light-indicator.on .light {
+            background-color: #66bb6a;
+        }
+
+        .light-indicator.off .light {
+            background-color: #ef5350;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            gap: 15px;
+        }
+
+        .controls__joystick-container {
+            width: 90px;
+            height: 90px;
+            background: radial-gradient(circle, #80deea, #00796b);
+            border-radius: 50%;
+            position: relative; /* Relativo para que el joystick se mueva dentro de él */
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .controls__joystick {
+            width: 40px;
+            height: 40px;
+            background: radial-gradient(circle, #004d40, #00251a);
+            border-radius: 50%;
+            position: absolute; /* Absoluto para moverlo con las coordenadas top y left */
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            cursor: pointer;
+            transition: transform 0.1s ease;
+        }
+
+        .controls__joystick {
+    position: relative; /* Necesario para moverlo dentro del contenedor */
+}
+
+        .controls__joystick:active {
+            transform: translate(-50%, -50%) scale(1.1);
+        }
+
+        .controls__button-container {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            gap: 15px;
+        }
+
+        .controls__button-container button {
+            padding: 12px;
+            border-radius: 10px;
+            border: none;
+            background: linear-gradient(135deg, #00796b, #004d40);
+            color: white;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s ease, background-color 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .controls__button-container button:hover {
+            transform: translateY(-2px);
+            background: linear-gradient(135deg, #004d40, #00251a);
+        }
+
+        .controls__arrows {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .controls__arrows button {
+            padding: 12px;
+            font-size: 20px;
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #00796b, #004d40);
+            color: white;
+            border-radius: 10px;
+            border: none;
+            cursor: pointer;
+            transition: transform 0.2s ease, background-color 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .controls__arrows button:hover {
+            transform: translateY(-2px);
+            background: linear-gradient(135deg, #004d40, #00251a);
+        }
+
+        .status-container {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #00796b;
+            color: white;
+            border-radius: 10px;
+            font-size: 16px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s ease;
+        }
+
+        .status-container:hover {
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="screen-container">
+        <h1 class="screen-container__title">Controlador de Dispositivo</h1>
+
+        <!-- Indicador de luz -->
+        <div class="light-indicator off" id="lightIndicator">
+            <span>Encendido/Apagado:</span>
+            <div class="light"></div>
+        </div>
+
+        <!-- Controles -->
+        <div class="controls">
+            <!-- Joystick -->
+            <div class="controls__joystick-container"  id="joystickContainer">
+                <div class="controls__joystick" id="joystick"></div>
+            </div>
+
+            <!-- Botones de control -->
+            <div class="controls__button-container">
+                <button onclick="sendCommand('off')">Apagar</button>
+                <button onclick="sendCommand('on')">Encender</button>
+            </div>
+        </div>
+
+        <!-- Flechas de dirección -->
+        <div class="controls__arrows">
+            <button onclick="sendCommand('up')">↑</button>
+            <button onclick="sendCommand('down')">↓</button>
+        </div>
+
+        <!-- Sección de estado de comandos -->
+        <div class="status-container" id="status-message">
+            Ninguna señal enviada aún
+        </div>
+    </div>
+    <script>
+        const joystick = document.getElementById("joystick");
+        const joystickContainer = document.getElementById("joystickContainer");
+
+        let joystickPosition = { x: 50, y: 45 }; // Posición inicial en píxeles
+        const moveStep = 10; // Tamaño del paso
+        document.addEventListener("keydown", (e) => {
+    const maxX = joystickContainer.offsetWidth - joystick.offsetWidth; // Máximo X
+    const maxY = joystickContainer.offsetHeight - joystick.offsetHeight; // Máximo Y
+
+    switch (e.key.toLowerCase()) {
+        case "w": // Arriba
+            joystickPosition.y = Math.max(0, joystickPosition.y - moveStep);
+            break;
+        case "s": // Abajo
+            joystickPosition.y = Math.min(maxY, joystickPosition.y + moveStep);
+            break;
+        case "a": // Izquierda
+            joystickPosition.x = Math.max(0, joystickPosition.x - moveStep);
+            break;
+        case "d": // Derecha
+            joystickPosition.x = Math.min(maxX, joystickPosition.x + moveStep); // Corrige límite de derecha
+            break;
+        default:
+            return; // Ignorar teclas no relevantes
+    }
+
+    updateJoystickPosition(); // Actualiza la posición
+    sendCommand(`move-${e.key}`);
+});
+
+        // Función para actualizar la posición del joystick
+        function updateJoystickPosition() {
+            joystick.style.left = joystickPosition.x + "px";
+            joystick.style.top = joystickPosition.y + "px";
+        }
+
+        // Función simulada para enviar comandos
+        function sendCommand(command) {
+            const statusMessage = document.getElementById("status-message");
+            statusMessage.textContent = `Comando enviado: ${command}`;
+        }
+    </script>
+
+</body>
+</html>
